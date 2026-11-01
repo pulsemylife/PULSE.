@@ -98,7 +98,22 @@ details.recipe summary{cursor:pointer;padding:4px 0;color:var(--text)}
  <p class="muted">На 4-й неделе выбери только один вариант — круговой или силовой. Не нужно выполнять оба. Если предыдущая неделя ощущалась тяжёлой, не увеличивай нагрузку.</p>
  </div>
  <div class="card"><h2>Подбор программы</h2><label>Уровень</label><select id="level" onchange="renderProgram()"><option value="easy">Начальный</option><option value="medium">Средний</option><option value="active">Продвинутый</option></select><label>Направление</label><select id="programType" onchange="renderProgram()"><option value="general">Общая подготовка</option><option value="mobility">Подвижность и растяжка</option><option value="strength">Силовая основа</option><option value="endurance">Выносливость</option></select><p class="muted">План на 30 дней чередует нагрузку и восстановление. Повторения — ориентир, а не обязательство.</p><div class="daygrid" id="programCalendar"></div><div class="row between"><span id="programProgress" class="muted">Отмечено 0 из 30</span><button onclick="completeToday()">Отметить занятие</button></div><div class="progress"><i id="programBar"></i></div><div id="todayPlan" class="card"></div></div>
- <div class="card"><h2>Библиотека упражнений</h2><label>Фильтр</label><input id="exerciseFilter" placeholder="Поиск упражнения" oninput="renderExercises()"><div id="exerciseList"></div></div>
+ <div class="card"><h2>Библиотека упражнений</h2>
+ <p class="muted">Добавляй собственные упражнения: они сохранятся на этом устройстве и будут доступны в твоей библиотеке.</p>
+ <div class="grid2">
+  <div><label for="customExerciseName">Название упражнения *</label><input id="customExerciseName" maxlength="60" placeholder="Например, подъёмы рук"></div>
+  <div><label for="customExerciseCategory">Категория</label><select id="customExerciseCategory"><option>Силовая основа</option><option>Разминка</option><option>Выносливость</option><option>Растяжка и восстановление</option><option>Координация</option><option>Другое</option></select></div>
+ </div>
+ <label for="customExerciseDesc">Описание / техника выполнения *</label><textarea id="customExerciseDesc" rows="2" maxlength="400" placeholder="Кратко опиши, как выполнять упражнение"></textarea>
+ <div class="grid2">
+  <div><label for="customExerciseDose">Повторения или время</label><input id="customExerciseDose" maxlength="40" placeholder="Например, 8–10 раз"></div>
+  <div><label for="customExerciseSets">Подходы</label><input id="customExerciseSets" maxlength="30" placeholder="Например, 2 подхода"></div>
+ </div>
+ <label for="customExerciseTip">Подсказка (необязательно)</label><input id="customExerciseTip" maxlength="180" placeholder="Например, выполняй плавно и без боли">
+ <div class="row wrap"><button type="button" onclick="addCustomExercise()">＋ Добавить упражнение</button><span class="muted" id="customExerciseStatus" aria-live="polite"></span></div>
+ </div>
+ <div class="card"><h3>Мои упражнения</h3><div id="myExerciseList"></div></div>
+ <div class="card"><h3>Общая библиотека</h3><label>Фильтр</label><input id="exerciseFilter" placeholder="Поиск упражнения" oninput="renderExercises()"><div id="exerciseList"></div></div>
  <div class="notice"><b>Правила безопасности</b><ul><li>Если появляется боль, головокружение или плохое самочувствие — остановись. Острая боль не является нормой.</li><li>Дыши свободно: не задерживай дыхание во время усилия.</li><li>Пей воду по жажде; после еды дай себе время на комфортное пищеварение.</li><li>Оставляй дни для отдыха. Не нужно тренироваться через усталость или выполнять все подходы любой ценой.</li><li>При травмах, заболеваниях или сомнениях обсуди упражнения с врачом или квалифицированным специалистом.</li></ul><p>Повторения и время — ориентиры, а не обязательство. Уменьши объём или пропусти упражнение, если так комфортнее.</p></div>
 </section>
 
@@ -276,7 +291,7 @@ details.recipe summary{cursor:pointer;padding:4px 0;color:var(--text)}
 <script>
 const $=id=>document.getElementById(id), today=()=>new Date().toLocaleDateString('en-CA');
 let db=JSON.parse(localStorage.getItem('pulse_v2')||'{}');
-Object.assign(db,{food:db.food||{},done:db.done||{},favs:db.favs||[],habits:db.habits||{},water:db.water||{},profile:db.profile||{},steps:db.steps||{},dailyTasks:db.dailyTasks||{},activity:db.activity||{},challengeJoins:db.challengeJoins||{},cycle:db.cycle||{starts:[],length:28},moods:db.moods||{},sleep:db.sleep||{},plans:db.plans||[],events:db.events||[],foodPhotos:db.foodPhotos||[],avatar:db.avatar||'🌿',xpLedger:db.xpLedger||{},records:db.records||[],weekPlan:db.weekPlan||{},wallNotes:db.wallNotes||[],sportsProfile:db.sportsProfile||{sport:'',level:'Любитель',goal:'Самочувствие и удовольствие',about:''},activeChallenge:db.activeChallenge||null,challengeDays:db.challengeDays||{},recipeFavs:db.recipeFavs||[]});
+Object.assign(db,{food:db.food||{},done:db.done||{},favs:db.favs||[],habits:db.habits||{},water:db.water||{},profile:db.profile||{},steps:db.steps||{},dailyTasks:db.dailyTasks||{},activity:db.activity||{},challengeJoins:db.challengeJoins||{},cycle:db.cycle||{starts:[],length:28},moods:db.moods||{},sleep:db.sleep||{},plans:db.plans||[],events:db.events||[],foodPhotos:db.foodPhotos||[],avatar:db.avatar||'🌿',xpLedger:db.xpLedger||{},records:db.records||[],weekPlan:db.weekPlan||{},wallNotes:db.wallNotes||[],customExercises:db.customExercises||[],sportsProfile:db.sportsProfile||{sport:'',level:'Любитель',goal:'Самочувствие и удовольствие',about:''},activeChallenge:db.activeChallenge||null,challengeDays:db.challengeDays||{},recipeFavs:db.recipeFavs||[]});
 let quoteIndex=(Math.floor(Date.now()/86400000)*37)%1000;
 const A=["Начни с малого — маленькие шаги тоже ведут вперёд","Регулярность важнее идеального старта","Движение может быть заботой, а не наказанием","Твой темп имеет значение","Отдых — полноценная часть тренировочного процесса","Не сравнивай свой путь с чужим","Сила проявляется и в умении сделать паузу","Каждая попытка помогает узнать себя лучше","Выбирай активность, которая приносит радость","Тебе не нужно заслуживать заботу о себе"];
 const B=["Сегодня достаточно сделать один посильный шаг","Дай себе время освоить новое","Уважай свои границы и возможности","Прогресс не всегда заметен сразу","Пусть привычки поддерживают твоё благополучие","Последовательность строится без спешки","У каждого дня свой ритм","Терпение помогает продолжать","Слушай своё тело и меняй план при необходимости","Восстановление помогает двигаться дальше"];
@@ -351,7 +366,23 @@ function exerciseArt(e){
 }
 function renderExercises(){
  let s=($('exerciseFilter').value||'').toLowerCase();
- $('exerciseList').innerHTML=exercises.filter(e=>e.join(' ').toLowerCase().includes(s)).map(e=>`<div class="exercise-card"><img class="exercise-art" alt="Схематичная иллюстрация: ${e[0]}" src="${exerciseArt(e)}"><div><b>${e[0]}</b><div class="muted">${e[1]}</div><div class="exercise-meta"><span class="pill">${e[2]}</span><span class="pill">${e[3]}</span><span class="pill">${e[4]}</span></div><small class="muted">${e[5]}</small></div></div>`).join('')||'<p>Ничего не найдено.</p>'
+ $('exerciseList').innerHTML=exercises.filter(e=>e.join(' ').toLowerCase().includes(s)).map(e=>`<div class="exercise-card"><img class="exercise-art" alt="Схематичная иллюстрация: ${esc(e[0])}" src="${exerciseArt(e)}"><div><b>${esc(e[0])}</b><div class="muted">${esc(e[1])}</div><div class="exercise-meta"><span class="pill">${esc(e[2])}</span><span class="pill">${esc(e[3])}</span><span class="pill">${esc(e[4])}</span></div><small class="muted">${esc(e[5])}</small></div></div>`).join('')||'<p>Ничего не найдено.</p>';
+ const mine=db.customExercises||[];
+ $('myExerciseList').innerHTML=mine.length?mine.map((e,i)=>`<div class="exercise-card"><div class="exercise-art" aria-hidden="true" style="display:grid;place-items:center;color:var(--accent);font-size:25px">＋</div><div style="flex:1"><b>${esc(e.name)}</b><div class="muted">${esc(e.description)}</div><div class="exercise-meta"><span class="pill">${esc(e.category)}</span><span class="pill">${esc(e.dose||'По самочувствию')}</span><span class="pill">${esc(e.sets||'Без заданных подходов')}</span></div>${e.tip?`<small class="muted">${esc(e.tip)}</small>`:''}<div style="margin-top:8px"><button class="secondary" type="button" onclick="deleteCustomExercise(${i})">Удалить</button></div></div></div>`).join(''):'<p class="muted">Пока нет собственных упражнений. Добавь первое с помощью формы выше.</p>';
+}
+function addCustomExercise(){
+ const name=$('customExerciseName').value.trim(),description=$('customExerciseDesc').value.trim();
+ if(!name||!description){$('customExerciseStatus').textContent='Заполни название и описание.';return;}
+ if((db.customExercises||[]).length>=100){$('customExerciseStatus').textContent='Можно сохранить не более 100 упражнений.';return;}
+ db.customExercises=db.customExercises||[];
+ db.customExercises.push({name,description,category:$('customExerciseCategory').value,dose:$('customExerciseDose').value.trim(),sets:$('customExerciseSets').value.trim(),tip:$('customExerciseTip').value.trim()});
+ ['customExerciseName','customExerciseDesc','customExerciseDose','customExerciseSets','customExerciseTip'].forEach(id=>$(id).value='');
+ $('customExerciseStatus').textContent='Упражнение добавлено в твою библиотеку.';
+ save();
+}
+function deleteCustomExercise(index){
+ if(!Number.isInteger(index)||index<0||index>=(db.customExercises||[]).length)return;
+ db.customExercises.splice(index,1);save();
 }
 
 function setHabit(i,v){db.habits[today()]||={};db.habits[today()][i]=v;if(v)db.activity[today()]=true;save()}
